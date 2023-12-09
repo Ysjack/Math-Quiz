@@ -4,50 +4,89 @@ Created on Wed Nov  1 18:56:12 2023
 
 @author: 19108
 """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Math Quiz</title>
+</head>
+<body>
 
-import random
+<h1>Welcome to the Math Quiz!</h1>
 
-def generate_question():
-    num1 = random.randint(1, 10)
-    num2 = random.randint(1, 10)
-    operator = random.choice(['+', '-', '*', '/'])
-    if operator == '+':
-        answer = num1 + num2
-    elif operator == '-':
-        answer = num1 - num2
-    elif operator == '*':
-        answer = num1 * num2
-    else:
-        # Make sure the division is valid
-        while num2 == 0:
-            num2 = random.randint(1, 10)
-        answer = num1 / num2
+<div id="quiz">
+  <p id="question"></p>
+  <input type="text" id="userAnswer" placeholder="Your answer">
+  <button onclick="checkAnswer()">Submit</button>
+  <p id="result"></p>
+</div>
 
-    return f"What is {num1} {operator} {num2}?", answer
+<script>
+  function generateQuestion() {
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    const operators = ['+', '-', '*', '/'];
+    const operator = operators[Math.floor(Math.random() * operators.length)];
+    let answer;
 
-def main():
-    correct_answers = 0
-    total_questions = 5
+    switch (operator) {
+      case '+':
+        answer = num1 + num2;
+        break;
+      case '-':
+        answer = num1 - num2;
+        break;
+      case '*':
+        answer = num1 * num2;
+        break;
+      case '/':
+        answer = num1 / num2;
+        break;
+    }
 
-    print("Welcome to the Math Quiz!")
+    return { question: `What is ${num1} ${operator} ${num2}?`, answer };
+  }
 
-    for _ in range(total_questions):
-        question, answer = generate_question()
-        print(question)
+  let correctAnswers = 0;
+  const totalQuestions = 5;
+  let currentQuestion = 0;
 
-        user_answer = input("Your answer: ")
+  function displayQuestion() {
+    if (currentQuestion < totalQuestions) {
+      const { question, answer } = generateQuestion();
+      document.getElementById('question').textContent = question;
 
-        try:
-            user_answer = float(user_answer)
-            if user_answer == answer:
-                print("Correct!\n")
-                correct_answers += 1
-            else:
-                print(f"Sorry, the correct answer is {answer}\n")
-        except ValueError:
-            print("Invalid input. Please enter a number.\n")
+      document.getElementById('result').textContent = '';
+      document.getElementById('userAnswer').value = '';
 
-    print(f"You answered {correct_answers} out of {total_questions} questions correctly.")
+      document.getElementById('userAnswer').focus();
 
-if __name__ == "__main__":
-    main()
+      currentQuestion++;
+    } else {
+      document.getElementById('quiz').innerHTML = `<p>You answered ${correctAnswers} out of ${totalQuestions} questions correctly.</p>`;
+    }
+  }
+
+  function checkAnswer() {
+    const userAnswer = parseFloat(document.getElementById('userAnswer').value);
+    if (!isNaN(userAnswer)) {
+      const { answer } = generateQuestion();
+
+      if (userAnswer === answer) {
+        document.getElementById('result').textContent = 'Correct!';
+        correctAnswers++;
+      } else {
+        document.getElementById('result').textContent = `Sorry, the correct answer is ${answer}`;
+      }
+
+      displayQuestion();
+    } else {
+      document.getElementById('result').textContent = 'Invalid input. Please enter a number.';
+    }
+  }
+
+  displayQuestion();
+</script>
+
+</body>
+</html>
